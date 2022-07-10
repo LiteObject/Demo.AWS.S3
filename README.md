@@ -1,6 +1,15 @@
 # Demo AWS S3
 >Amazon S3 or Amazon Simple Storage Service is a service offered by Amazon Web Services that provides object storage through a web service interface. 
 
+## S3 Storage Classes:
+- S3 Standard
+- S3 Intelligent-Tiering
+- S3 Standard-Infrequent Access
+- S3 One Zone-Infrequent Access
+- S3 Glacier Instant Retrieval
+- S3 Glacier Flexible Retrieval
+- S3 Glacier Deep Archive
+
 ## S3 Bucket Features
 - Lifecycle Management
 - Bucket Policy
