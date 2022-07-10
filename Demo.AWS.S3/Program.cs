@@ -22,6 +22,14 @@ namespace Demo.AWS.S3
             // Create an S3 client object.
             AmazonS3Client s3Client = new();
 
+            // var response = await CreateS3BucketAsync(s3Client, $"delete-this-bucket-{DateTime.Now.Ticks}");
+            var response = await DeleteS3BucketAsync(s3Client, "delete-this-bucket-637930518805186075");
+
+            if (response != null)
+            {
+                Console.WriteLine(response.ResponseMetadata.ToString());
+            }
+
             // List the buckets owned by the user. Call a class method that calls the API method.
             Console.WriteLine("\nGetting a list of your buckets...");
             var listResponse = await MyListBucketsAsync(s3Client);
@@ -39,7 +47,7 @@ namespace Demo.AWS.S3
             return await s3Client.ListBucketsAsync();
         }
 
-        static async Task<PutBucketResponse?> CreateS3Bucket(IAmazonS3 s3Client, string bucketName)
+        static async Task<PutBucketResponse?> CreateS3BucketAsync(IAmazonS3 s3Client, string bucketName)
         {
             PutBucketResponse? createResponse = null;
 
@@ -47,7 +55,7 @@ namespace Demo.AWS.S3
             {
                 Console.WriteLine($"\nCreating bucket {bucketName}...");
                 createResponse = await s3Client.PutBucketAsync(bucketName);
-                Console.WriteLine($"Result: {createResponse.HttpStatusCode.ToString()}");
+                Console.WriteLine($"Result: {createResponse.HttpStatusCode}");
 
             }
             catch (Exception e)
@@ -56,6 +64,24 @@ namespace Demo.AWS.S3
             }
 
             return createResponse;
+        }
+
+        static async Task<DeleteBucketResponse?> DeleteS3BucketAsync(IAmazonS3 s3Client, string bucketName)
+        {
+            DeleteBucketResponse? deleteResponse = null;
+
+            try
+            {
+                Console.WriteLine($"\nDeleting bucket {bucketName}...");
+                deleteResponse = await s3Client.DeleteBucketAsync(bucketName);
+                Console.WriteLine($"Result: {deleteResponse.HttpStatusCode}");
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Caught exception when deleting a bucket: {e.Message}", e);
+            }
+
+            return deleteResponse;
         }
     }
 }
