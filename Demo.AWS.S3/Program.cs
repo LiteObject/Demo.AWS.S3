@@ -20,7 +20,7 @@ namespace Demo.AWS.S3
             Environment.SetEnvironmentVariable("AWS_REGION", "us-east-2");
 
             // Create an S3 client object.
-            AmazonS3Client s3Client = new();
+            using AmazonS3Client s3Client = new();
 
             // var response = await CreateS3BucketAsync(s3Client, $"delete-this-bucket-{DateTime.Now.Ticks}");
             var response = await DeleteS3BucketAsync(s3Client, "delete-this-bucket-637930518805186075");
