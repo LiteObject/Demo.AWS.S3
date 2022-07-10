@@ -10,6 +10,7 @@ namespace Demo.AWS.S3
      * 
      * ORIGINAL SOURCE:
      * https://docs.aws.amazon.com/sdk-for-net/v3/developer-guide/quick-start-s3-1-winvs.html
+     * https://docs.aws.amazon.com/sdkfornet1/latest/apidocs/html/T_Amazon_S3_AmazonS3.htm
      *****************************************************************************************************/
 
     internal class Program
@@ -22,13 +23,14 @@ namespace Demo.AWS.S3
             // Create an S3 client object.
             using AmazonS3Client s3Client = new();
 
-            // var response = await CreateS3BucketAsync(s3Client, $"delete-this-bucket-{DateTime.Now.Ticks}");
-            var response = await DeleteS3BucketAsync(s3Client, "delete-this-bucket-637930518805186075");
-
-            if (response != null)
-            {
-                Console.WriteLine(response.ResponseMetadata.ToString());
-            }
+            /*
+             * var response = await CreateS3BucketAsync(s3Client, $"delete-this-bucket-{DateTime.Now.Ticks}");
+             * var response = await DeleteS3BucketAsync(s3Client, "delete-this-bucket-637930518805186075");
+                if (response != null)
+                {
+                    Console.WriteLine(response.ResponseMetadata.ToString());
+                }
+            */
 
             // List the buckets owned by the user. Call a class method that calls the API method.
             Console.WriteLine("\nGetting a list of your buckets...");
@@ -38,13 +40,41 @@ namespace Demo.AWS.S3
 
             foreach (S3Bucket b in listResponse.Buckets)
             {
-                Console.WriteLine(b.BucketName);
+                Console.WriteLine(b.BucketName + " [CreatedOn: " + b.CreationDate + "]");
+                await PrintBucketObjectsAsync(s3Client, b.BucketName);
             }
         }
 
         static async Task<ListBucketsResponse> MyListBucketsAsync(IAmazonS3 s3Client)
         {
             return await s3Client.ListBucketsAsync();
+        }
+
+        static async Task PrintBucketObjectsAsync(IAmazonS3 s3Client, string bucketName)
+        {
+            ListObjectsRequest listRequest = new()
+            {
+                BucketName = bucketName,
+            };
+
+            ListObjectsResponse listResponse;
+
+            do
+            {
+                listResponse = await s3Client.ListObjectsAsync(listRequest);
+
+                foreach (S3Object obj in listResponse.S3Objects)
+                {
+                    Console.WriteLine("------------------");
+                    Console.WriteLine(" Object: " + obj.Key);
+                    Console.WriteLine(" Size: " + obj.Size);
+                    Console.WriteLine(" LastModified: " + obj.LastModified);
+                    Console.WriteLine(" Storage class: " + obj.StorageClass);
+                }
+
+                // Set the marker property
+                listRequest.Marker = listResponse.NextMarker;
+            } while (listResponse.IsTruncated);
         }
 
         static async Task<PutBucketResponse?> CreateS3BucketAsync(IAmazonS3 s3Client, string bucketName)
